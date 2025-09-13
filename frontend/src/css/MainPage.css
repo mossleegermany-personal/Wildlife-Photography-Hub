@@ -362,6 +362,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
 .reset-button {
   background: var(--primary-bg);
   color: var(--text-dark);
