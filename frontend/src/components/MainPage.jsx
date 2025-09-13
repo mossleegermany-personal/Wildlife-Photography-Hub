@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import '../css/MainPage.css'
 import ControlPanel from './Subcomponents/ControlPanel/ControlPanel'
 import MapContainer from './Subcomponents/MapContainer/MapContainer'
-import ObservationsList from './subcomponents/ObservationsList/ObservationsList'
+import ObservationsList from './Subcomponents/ObservationsList/ObservationsList'
 import { devUtils } from '../utils/devUtils'
 
 class MainPage extends Component {
