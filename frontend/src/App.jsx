@@ -153,6 +153,12 @@ class App extends Component {
     
     // Connect to the socket server
     const socket = socketService.connect()
+    
+    // Check if socket connection was successful
+    if (!socket) {
+      console.log('⚠️ Socket connection disabled - running in production mode')
+      return
+    }
 
     // Monitor connection status
     socket.on('connect', () => {
