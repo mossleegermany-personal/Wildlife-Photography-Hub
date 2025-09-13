@@ -14,7 +14,7 @@ class DatabaseConnectivity {
             socketTimeoutMS: 30000,
             connectTimeoutMS: 20000,
             retryWrites: true,
-            retryReads: truez
+            retryReads: true
         });
         
         this.isConnected = false;
