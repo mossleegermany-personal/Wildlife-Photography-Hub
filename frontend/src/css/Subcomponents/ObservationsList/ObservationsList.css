@@ -1,0 +1,275 @@
+/* Wildlife Observations List Component Styles */
+
+.observations-column {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--rounded-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  height: 500px; /* Match map height */
+  min-height: 500px; /* Match map min-height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Observations List Styles */
+.observations-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.observations-title-section {
+  flex: 1;
+}
+
+.observations-header h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--forest-green);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.observations-count {
+  color: var(--text-gray);
+  font-size: 0.875rem;
+}
+
+.location-info {
+  margin: 0.5rem 0;
+}
+
+.location-badge {
+  background: var(--forest-green);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--rounded-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.close-observations-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-gray);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--rounded);
+  transition: all 0.2s ease;
+  margin-left: 1rem;
+}
+
+.close-observations-btn:hover {
+  color: var(--forest-green);
+  background: var(--border-light);
+}
+
+.observations-list {
+  padding: 1rem;
+  flex: 1; /* Take remaining space */
+  overflow-y: auto;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--forest-green) var(--border-light); /* Firefox */
+}
+
+/* Webkit scrollbar styling for Chrome/Safari */
+.observations-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.observations-list::-webkit-scrollbar-track {
+  background: var(--border-light);
+  border-radius: 3px;
+}
+
+.observations-list::-webkit-scrollbar-thumb {
+  background: var(--forest-green);
+  border-radius: 3px;
+}
+
+.observations-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dark);
+}
+
+.observation-item {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--rounded-lg);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+  border-left: 4px solid var(--forest-green);
+}
+
+.observation-item:hover {
+  border-color: var(--forest-green);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.observation-item:last-child {
+  margin-bottom: 0;
+}
+
+.observation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.species-name {
+  margin: 0;
+  color: var(--forest-green);
+  font-size: 1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.observation-date {
+  color: var(--text-gray);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.observation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.species-info {
+  display: flex;
+  align-items: center;
+}
+
+.species-type {
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.location-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.observer-info {
+  margin-top: 0.25rem;
+}
+
+.location, .time, .observer {
+  font-size: 0.8rem;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.observer {
+  margin-top: 0.25rem;
+}
+
+.observation-notes {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.observation-notes p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+/* No Observations Message */
+.no-observations {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.no-observations-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.no-observations-icon {
+  font-size: 2rem;
+}
+
+.no-observations p {
+  margin: 0;
+  color: var(--text-gray);
+  font-size: 1rem;
+}
+
+.no-observations-hint {
+  color: var(--text-gray);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .observations-column {
+    height: 400px;
+    min-height: 400px;
+  }
+  
+  .observation-item {
+    padding: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .observations-column {
+    height: 350px;
+    min-height: 350px;
+  }
+
+  .observations-header {
+    padding: 1rem;
+  }
+  
+  .observations-list {
+    padding: 0.75rem;
+  }
+  
+  .observation-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .observation-header {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+  
+  .location-time {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .species-name {
+    font-size: 0.9rem;
+  }
+  
+  .observation-date {
+    font-size: 0.7rem;
+  }
+}
