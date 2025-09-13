@@ -1,7 +1,8 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
 // Use environment variable if available, otherwise fallback to hardcoded URI
-const uri = process.env.MONGODB_URI || "mongodb+srv://mossleegermany_db_user:Mlxy6695@moses-personal.pvalfbk.mongodb.net/?retryWrites=true&w=majority&appName=Moses-Personal";
+//mongodb+srv://mossleegermany_db_user:<db_password>@moses-personal.pvalfbk.mongodb.net/?retryWrites=true&w=majority&appName=Moses-Personal
+const uri = "mongodb+srv://mossleegermany_db_user:Mlxy6695@moses-personal.pvalfbk.mongodb.net/?retryWrites=true&w=majority&appName=Moses-Personal";
 
 class DatabaseConnectivity {
     constructor(options = {}) {
