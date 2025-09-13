@@ -3,34 +3,35 @@ const { MongoClient, ObjectId } = require('mongodb');
 // Use environment variable if available, otherwise fallback to hardcoded URI
 const uri = process.env.MONGODB_URI || "mongodb+srv://mossleegermany_db_user:Mlxy6695@moses-personal.pvalfbk.mongodb.net/?retryWrites=true&w=majority&appName=Moses-Personal";
 
-class DatabaseConnectivity {
+class RobustDatabaseConnectivity {
     constructor(options = {}) {
         this.instanceId = options.instanceId || `db_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
         
+        // Updated connection options for better compatibility
         this.client = new MongoClient(uri, {
             maxPoolSize: options.maxPoolSize || 10,
-            minPoolSize: options.minPoolSize || 2,
-            maxIdleTimeMS: 60000,
-            serverSelectionTimeoutMS: 15000,
-            socketTimeoutMS: 30000,
-            connectTimeoutMS: 20000,
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 45000,
+            connectTimeoutMS: 30000,
             retryWrites: true,
             retryReads: true,
-            // SSL/TLS configuration for MongoDB Atlas
-            ssl: true,
-            sslValidate: true,
-            authSource: 'admin'
+            authSource: 'admin',
+            // Disable problematic SSL options
+            ssl: false,  // Let MongoDB driver handle SSL automatically for Atlas
+            family: 4    // Force IPv4
         });
         
         this.isConnected = false;
         this.connectionPromise = null;
         this.silentMode = options.silentMode || false;
+        this.maxRetries = options.maxRetries || 3;
+        this.retryDelay = options.retryDelay || 2000;
     }
 
     async initialize() {
         if (this.isConnected) {
             try {
-                await this.client.db('admin').command({ ping: 1 }, { maxTimeMS: 1000 });
+                await this.client.db('admin').command({ ping: 1 }, { maxTimeMS: 5000 });
                 return;
             } catch (error) {
                 this.isConnected = false;
@@ -41,34 +42,53 @@ class DatabaseConnectivity {
             return this.connectionPromise;
         }
 
-        this.connectionPromise = this._connect();
+        this.connectionPromise = this._connectWithRetry();
         return this.connectionPromise;
     }
 
-    async _connect() {
-        try {
-            if (!this.silentMode) {
-                console.log('⚡ Connecting to database...');
+    async _connectWithRetry() {
+        let lastError;
+        
+        for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
+            try {
+                if (!this.silentMode) {
+                    console.log(`⚡ Connecting to database... (Attempt ${attempt}/${this.maxRetries})`);
+                }
+                
+                await this.client.connect();
+                await this.client.db('admin').command({ ping: 1 });
+                
+                this.isConnected = true;
+                this.connectionPromise = null;
+                
+                if (!this.silentMode) {
+                    console.log('✅ Database connected successfully');
+                }
+                return;
+                
+            } catch (error) {
+                lastError = error;
+                this.isConnected = false;
+                
+                if (!this.silentMode) {
+                    console.error(`❌ Database connection attempt ${attempt} failed:`, error.message);
+                }
+                
+                if (attempt < this.maxRetries) {
+                    if (!this.silentMode) {
+                        console.log(`⏳ Retrying in ${this.retryDelay}ms...`);
+                    }
+                    await this._sleep(this.retryDelay);
+                }
             }
-            
-            await this.client.connect();
-            await this.client.db('admin').command({ ping: 1 });
-            
-            this.isConnected = true;
-            this.connectionPromise = null;
-            
-            if (!this.silentMode) {
-                console.log('✅ Database connected successfully');
-            }
-        } catch (error) {
-            this.connectionPromise = null;
-            this.isConnected = false;
-            
-            if (!this.silentMode) {
-                console.error('❌ Database connection failed:', error.message);
-            }
-            throw error;
         }
+        
+        this.connectionPromise = null;
+        throw lastError;
+    }
+
+    async _sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async insertDocument(databaseName, collectionName, document) {
@@ -166,6 +186,16 @@ class DatabaseConnectivity {
             };
         }
     }
+
+    async close() {
+        if (this.client) {
+            await this.client.close();
+            this.isConnected = false;
+            if (!this.silentMode) {
+                console.log('🔌 Database connection closed');
+            }
+        }
+    }
 }
 
-module.exports = DatabaseConnectivity;
+module.exports = RobustDatabaseConnectivity;

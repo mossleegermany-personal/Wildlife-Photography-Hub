@@ -1,11 +1,15 @@
-const DatabaseConnectivity = require('../database/connection');
+const RobustDatabaseConnectivity = require('../database/robust-connection');
 
 class WildlifeSightingsController 
 {
   constructor() {
     this.databaseName = 'Photography';
     this.collectionName = 'Wildlife Collection';
-    this.db = new DatabaseConnectivity();
+    this.db = new RobustDatabaseConnectivity({ 
+      maxRetries: 3, 
+      retryDelay: 2000,
+      silentMode: false 
+    });
   }
 
   createSighting(sightingData) 
