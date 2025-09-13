@@ -15,7 +15,7 @@ export default defineConfig({
     open: true, // Automatically open browser
     hmr: {
       overlay: true, // Show errors as overlay
-      port: 3001 // Use different port for HMR
+      port: 3002 // Use different port for HMR (changed from 3001 to 3002)
     },
     watch: {
       // Watch for changes in these files
