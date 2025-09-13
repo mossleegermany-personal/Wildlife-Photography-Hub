@@ -4,6 +4,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './', // Use relative paths for assets
   plugins: [react({
     // Enable fast refresh for better development experience
     fastRefresh: true,
@@ -31,13 +32,22 @@ export default defineConfig({
     }
   },
   build: {
-    // Enable source maps for better debugging
-    sourcemap: true,
-    // Optimize chunks
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'esbuild',
+    cssCodeSplit: false, // Bundle all CSS into one file
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom']
+        },
+        // Ensure CSS files are properly named
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/[name]-[hash][extname]'
+          }
+          return 'assets/[name]-[hash][extname]'
         }
       }
     }
