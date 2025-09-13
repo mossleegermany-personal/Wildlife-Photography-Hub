@@ -33,7 +33,7 @@ jobs:
       - name: Install Frontend Dependencies
         run: |
           cd frontend
-          npm ci
+          npm install
       - name: Get Id Token
         uses: actions/github-script@v7
         id: idtoken
