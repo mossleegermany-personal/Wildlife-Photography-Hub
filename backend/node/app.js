@@ -3,6 +3,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+// Load environment variables
+require('dotenv').config();
+
 // Import routes
 const wildlifeSightingsRoutes = require('./routes/wildlifeSightings');
 

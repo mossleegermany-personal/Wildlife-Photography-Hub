@@ -1,6 +1,7 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
-const uri = "mongodb+srv://mossleegermany_db_user:Mlxy6695@moses-personal.pvalfbk.mongodb.net/?retryWrites=true&w=majority&appName=Moses-Personal";
+// Use environment variable if available, otherwise fallback to hardcoded URI
+const uri = process.env.MONGODB_URI || "mongodb+srv://mossleegermany_db_user:Mlxy6695@moses-personal.pvalfbk.mongodb.net/?retryWrites=true&w=majority&appName=Moses-Personal&ssl=true&authSource=admin";
 
 class DatabaseConnectivity {
     constructor(options = {}) {
@@ -14,7 +15,9 @@ class DatabaseConnectivity {
             socketTimeoutMS: 30000,
             connectTimeoutMS: 20000,
             retryWrites: true,
-            retryReads: true
+            retryReads: true,
+            tls: true,
+            tlsAllowInvalidCertificates: false
         });
         
         this.isConnected = false;
