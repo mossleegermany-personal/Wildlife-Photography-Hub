@@ -1,4 +1,4 @@
-const RobustDatabaseConnectivity = require('../database/robust-connection');
+const RobustDatabaseConnectivity = require('../database/connection');
 
 class WildlifeSightingsController 
 {

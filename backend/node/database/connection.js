@@ -5,8 +5,6 @@ const uri = process.env.MONGODB_URI || "mongodb+srv://mossleegermany_db_user:Mlx
 
 class DatabaseConnectivity {
     constructor(options = {}) {
-        this.instanceId = options.instanceId || `db_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
-        
         this.client = new MongoClient(uri, {
             maxPoolSize: options.maxPoolSize || 10,
             minPoolSize: options.minPoolSize || 2,
@@ -15,11 +13,7 @@ class DatabaseConnectivity {
             socketTimeoutMS: 30000,
             connectTimeoutMS: 20000,
             retryWrites: true,
-            retryReads: true,
-            // SSL/TLS configuration for MongoDB Atlas
-            ssl: true,
-            sslValidate: true,
-            authSource: 'admin'
+            retryReads: true
         });
         
         this.isConnected = false;
@@ -30,7 +24,7 @@ class DatabaseConnectivity {
     async initialize() {
         if (this.isConnected) {
             try {
-                await this.client.db('admin').command({ ping: 1 }, { maxTimeMS: 1000 });
+                await this.client.db().command();
                 return;
             } catch (error) {
                 this.isConnected = false;
@@ -52,7 +46,7 @@ class DatabaseConnectivity {
             }
             
             await this.client.connect();
-            await this.client.db('admin').command({ ping: 1 });
+            await this.client.db().command();
             
             this.isConnected = true;
             this.connectionPromise = null;
