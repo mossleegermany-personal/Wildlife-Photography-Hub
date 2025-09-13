@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client';
+import config from '../config/environment';
 
 class SocketService {
   constructor() {
@@ -6,7 +7,7 @@ class SocketService {
     this.listeners = new Map();
   }
 
-  connect(url = 'http://localhost:3001') {
+  connect(url = config.SOCKET_URL) {
     if (this.socket && this.socket.connected) {
       console.log('Socket already connected');
       return this.socket;

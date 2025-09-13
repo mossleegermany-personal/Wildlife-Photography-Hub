@@ -27,7 +27,14 @@ class App extends Component {
   loadSightingsFromAPI = async () => {
     try {
       console.log('🔄 Loading sightings from API...')
-      const response = await fetch('http://localhost:3001/wildlife-sightings', {
+      
+      // Skip API call if no backend URL is configured (production mode)
+      if (!config.API_BASE_URL) {
+        console.log('⚠️ API disabled in production mode')
+        return
+      }
+      
+      const response = await fetch(`${config.API_BASE_URL}/wildlife-sightings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

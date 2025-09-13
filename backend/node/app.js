@@ -21,7 +21,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'https://zealous-river-0dff29300.1.azurestaticapps.net'],
   credentials: true
 }));
 

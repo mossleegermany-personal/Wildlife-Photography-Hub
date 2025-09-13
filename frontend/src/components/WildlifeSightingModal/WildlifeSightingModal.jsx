@@ -116,7 +116,7 @@ class WildlifeSightingModal extends Component {
     try {
       console.log('Submitting sighting data:', sightingData)
       // Send data to backend using axios
-      const response = await axios.post('http://localhost:3001/wildlife-sightings', {purpose: "newRecord", sightingData})
+      const response = await axios.post(`${config.API_BASE_URL}/wildlife-sightings`, {purpose: "newRecord", sightingData})
       
       if (response.data.success) {
         alert('Wildlife sighting recorded successfully!')
