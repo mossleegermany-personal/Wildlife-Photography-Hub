@@ -61,4 +61,3 @@ jobs:
         with:
           app-name: 'wildlife-photography-backend'
           slot-name: 'Production'
-          
