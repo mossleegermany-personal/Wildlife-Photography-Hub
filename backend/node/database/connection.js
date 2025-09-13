@@ -25,7 +25,8 @@ class DatabaseConnectivity {
     async initialize() {
         if (this.isConnected) {
             try {
-                await this.client.db().command();
+                // Test connection with ping command
+                await this.client.db('admin').command({ ping: 1 });
                 return;
             } catch (error) {
                 this.isConnected = false;
@@ -47,7 +48,8 @@ class DatabaseConnectivity {
             }
             
             await this.client.connect();
-            await this.client.db().command();
+            // Use admin database with ping command to test connection
+            await this.client.db('admin').command({ ping: 1 });
             
             this.isConnected = true;
             this.connectionPromise = null;
