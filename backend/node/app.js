@@ -24,7 +24,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://zealous-river-0dff29300.1.azurestaticapps.net'],
+  origin: ['http://localhost:3000', 'https://zealous-river-0dff29300.1.azurestaticapps.net', 'android-app://'],
   credentials: true
 }));
 
