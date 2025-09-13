@@ -2,7 +2,9 @@ import { io } from 'socket.io-client';
 
 // Environment configuration
 const config = {
-  SOCKET_URL: import.meta.env.DEV ? 'http://localhost:3001' : 'https://wildlife-photography-backend.azurewebsites.net'
+  API_BASE_URL: window.location.hostname === 'localhost'
+    ? 'http://localhost:3001'
+    : 'https://wildlife-photography-backend.azurewebsites.net'
 }
 
 class SocketService {
