@@ -1,0 +1,211 @@
+/* Wildlife Photography Hub - Global Theme */
+
+/* CSS Variables for Wildlife Photography Theme */
+:root {
+  /* Nature-inspired Color Palette */
+  --forest-green: #2d5a3d;
+  --sage-green: #87a96b;
+  --earth-brown: #8b6914;
+  --sky-blue: #4a90c2;
+  --sunset-orange: #d4831c;
+  --wildlife-red: #c4621a;
+  
+  /* Background Colors */
+  --primary-bg: #f8f9fa;
+  --secondary-bg: rgba(248, 249, 250, 0.95);
+  --panel-bg: rgba(255, 255, 255, 0.98);
+  --input-bg: #ffffff;
+  --hover-bg: #f1f3f4;
+  
+  /* Text Colors */
+  --text-dark: #2d5a3d;
+  --text-gray: #6b7280;
+  --text-light: #ffffff;
+  --text-muted: #9ca3af;
+  
+  /* Accent Colors */
+  --accent-green: #87a96b;
+  --accent-blue: #4a90c2;
+  --accent-orange: #d4831c;
+  --accent-red: #c4621a;
+  
+  /* Border Colors */
+  --border-color: #d1d5db;
+  --border-focus: #87a96b;
+  --border-active: #2d5a3d;
+  
+  /* Category Colors */
+  --category-birds: #4a90c2;
+  --category-mammals: #8b6914;
+  --category-reptiles: #87a96b;
+  --category-insects: #d4831c;
+  --category-fish: #4a90c2;
+  --category-plants: #87a96b;
+  
+  /* Border Radius */
+  --rounded-sm: 4px;
+  --rounded-md: 6px;
+  --rounded-lg: 8px;
+  --rounded-xl: 12px;
+  --rounded-2xl: 16px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(45, 90, 61, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(45, 90, 61, 0.1), 0 2px 4px -1px rgba(45, 90, 61, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(45, 90, 61, 0.1), 0 4px 6px -2px rgba(45, 90, 61, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(45, 90, 61, 0.1), 0 10px 10px -5px rgba(45, 90, 61, 0.04);
+  
+  /* Wildlife Icons & Decorations */
+  --icon-size-sm: 16px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 32px;
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e8 100%);
+  color: var(--text-dark);
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Scale */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--forest-green);
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+p, span, div {
+  font-family: 'SF Pro Text', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+}
+
+/* Input Typography */
+input, textarea, select, button {
+  font-family: 'SF Pro Text', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Labels */
+label {
+  font-family: 'SF Pro Text', 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--forest-green);
+  letter-spacing: 0.01em;
+}
+
+/* Button Typography */
+button {
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--primary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-green);
+  border-radius: var(--rounded-lg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--forest-green);
+}
+
+/* Selection Styling */
+::selection {
+  background: var(--accent-green);
+  color: var(--text-light);
+}
+
+/* Focus Styles */
+*:focus {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
+}
+
+/* Button Base Styles */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Input Base Styles */
+input, textarea, select {
+  font-family: inherit;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Wildlife Photography Specific Animations */
+@keyframes fadeInNature {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseWildlife {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.fade-in-nature {
+  animation: fadeInNature 0.5s ease-out;
+}
+
+.pulse-wildlife {
+  animation: pulseWildlife 2s infinite;
+}
