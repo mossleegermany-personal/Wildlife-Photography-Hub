@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
-import '../../../css/Subcomponents/MapContainer/MapContainer.css'
+import '@css/Subcomponents/MapContainer/MapContainer.css'
 
 class MapContainer extends Component {
   constructor(props) {
@@ -14,19 +14,16 @@ class MapContainer extends Component {
     }
   }
 
-  // Convert transformedSightings to map markers, grouping by coordinates
+  // Convert transformedSightings to individual map markers (no clustering)
   getSightingMarkers = () => {
     const { transformedSightings } = this.props
     if (!transformedSightings || transformedSightings.length === 0) {
       return []
     }
 
-    // Group sightings by coordinates
-    const groupedSightings = {}
-    
-    transformedSightings.forEach((sighting, index) => {
+    // Create individual markers for each sighting
+    return transformedSightings.map((sighting, index) => {
       let position = { lat: 1.3521, lng: 103.8198 } // Default to Singapore center
-      let coordKey = 'default'
       
       console.log(`Processing sighting ${index}:`, sighting.coordinates)
       
@@ -40,7 +37,6 @@ class MapContainer extends Component {
           // Validate coordinates are within reasonable ranges
           if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
             position = { lat, lng }
-            coordKey = sighting.coordinates
             console.log(`Successfully parsed coordinates for ${sighting.species}:`, position)
           } else {
             console.warn(`Invalid coordinates for ${sighting.species}:`, lat, lng)
@@ -50,39 +46,15 @@ class MapContainer extends Component {
         }
       }
 
-      // Group sightings by coordinate key
-      if (!groupedSightings[coordKey]) {
-        groupedSightings[coordKey] = {
-          position: position,
-          originalCoordinates: coordKey === 'default' ? 'Unknown Location' : coordKey,
-          sightings: []
-        }
-      }
-      
-      groupedSightings[coordKey].sightings.push(sighting)
-    })
-
-    // Convert grouped sightings to markers
-    return Object.entries(groupedSightings).map(([coordKey, group], index) => {
-      const sightingCount = group.sightings.length
-      const firstSighting = group.sightings[0]
-      
-      // Create title based on number of sightings
-      let title
-      if (sightingCount === 1) {
-        title = `${firstSighting.species} (${firstSighting.speciesType})`
-      } else {
-        const speciesList = group.sightings.map(s => s.species).slice(0, 3).join(', ')
-        title = `${sightingCount} observations: ${speciesList}${sightingCount > 3 ? '...' : ''}`
-      }
-
+      // Create individual marker for each sighting
       return {
-        id: `grouped-${coordKey}-${index}`,
-        position: group.position,
-        title: title,
-        sightingCount: sightingCount,
-        sightings: group.sightings,
-        originalCoordinates: group.originalCoordinates
+        id: `sighting-${sighting.id}`,
+        position: position,
+        title: `${sighting.species} (${sighting.speciesType})`,
+        sightingCount: 1,
+        sightings: [sighting], // Single sighting in array for consistent interface
+        originalCoordinates: sighting.coordinates,
+        sighting: sighting // Direct reference to the sighting
       }
     })
   }

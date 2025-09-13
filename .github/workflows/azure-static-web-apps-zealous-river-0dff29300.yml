@@ -55,6 +55,11 @@ jobs:
           output_location: "dist" # Built app content directory - optional
           app_build_command: "npm run build"
           github_id_token: ${{ steps.idtoken.outputs.result }}
+        env:
+          NODE_ENV: production
+          WEBSITE_NODE_DEFAULT_VERSION: "20.19.1"
+          NODE_VERSION: "20.19.1"
+          ORYX_BUILD_NODE_VERSION: "20.19.1"
 
 
   close_pull_request_job:

@@ -1,5 +1,9 @@
 import { io } from 'socket.io-client';
-import config from '../config/environment';
+
+// Environment configuration
+const config = {
+  SOCKET_URL: import.meta.env.DEV ? 'http://localhost:3001' : null
+}
 
 class SocketService {
   constructor() {

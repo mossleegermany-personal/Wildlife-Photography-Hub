@@ -4,6 +4,11 @@ import MainPage from './components/MainPage'
 import WildlifeSightingModal from './components/WildlifeSightingModal/WildlifeSightingModal'
 import socketService from './services/socketService'
 
+// Environment configuration
+const config = {
+  API_BASE_URL: import.meta.env.DEV ? 'http://localhost:3001' : null
+}
+
 class App extends Component {
   constructor(props) {
     super(props)

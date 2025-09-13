@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import '../../css/WildlifeSightingModal/WildlifeSightingModal.css'
+import '@css/WildlifeSightingModal/WildlifeSightingModal.css'
+
+// Environment configuration
+const config = {
+  API_BASE_URL: import.meta.env.DEV ? 'http://localhost:3001' : null
+}
 
 class WildlifeSightingModal extends Component {
   constructor(props) {

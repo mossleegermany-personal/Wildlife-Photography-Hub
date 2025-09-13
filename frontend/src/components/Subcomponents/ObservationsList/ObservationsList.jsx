@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import '../../../css/Subcomponents/ObservationsList/ObservationsList.css'
+import '@css/Subcomponents/ObservationsList/ObservationsList.css'
 
 class ObservationsList extends Component {
   // Get appropriate emoji for species type
@@ -20,8 +20,6 @@ class ObservationsList extends Component {
 
   render() {
     const { observations = [], selectedLocation, onClose } = this.props
-
-   
     const locationCoords = observations.length > 0 && observations[0].coordinates && observations[0].coordinates !== 'Unknown Location' 
       ? observations[0].coordinates 
       : null;
@@ -32,11 +30,6 @@ class ObservationsList extends Component {
           <div className="observations-title-section">
             <h3>Wildlife Observations</h3>
             <span className="observations-count">{observations.length} observation{observations.length !== 1 ? 's' : ''}</span>
-            {locationCoords && (
-              <div className="location-info">
-                <span className="location-badge">📍 {locationCoords}</span>
-              </div>
-            )}
           </div>
           {onClose && (
             <button className="close-observations-btn" onClick={onClose} title="Close observations">

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import '../../../css/Subcomponents/ControlPanel/ControlPanel.css'
+import '@css/Subcomponents/ControlPanel/ControlPanel.css'
 
 class ControlPanel extends Component {
   constructor(props) {
@@ -11,6 +11,11 @@ class ControlPanel extends Component {
       filterSpeciesType: '',
       filterLocation: ''
     }
+  }
+
+  componentDidMount() {
+    // Apply initial filters (no filters = show all)
+    this.applyFilters()
   }
 
   // Get unique species types from transformedSightings
@@ -35,8 +40,8 @@ class ControlPanel extends Component {
     }
     
     const locations = transformedSightings
-      .map(sighting => sighting.location)
-      .filter(location => location && location !== 'Unknown Location')
+      .map(sighting => sighting.coordinates)
+      .filter(coordinates => coordinates && coordinates !== 'Unknown Location')
     
     return [...new Set(locations)].sort()
   }
@@ -58,41 +63,13 @@ class ControlPanel extends Component {
   // Apply filters and notify parent component
   applyFilters = () => {
     const { searchQuery, filterSpeciesType, filterLocation } = this.state
-    const { transformedSightings } = this.props
     
-    if (!transformedSightings) return
-    
-    let filteredSightings = [...transformedSightings]
-    
-    // Apply search filter
-    if (searchQuery) {
-      filteredSightings = filteredSightings.filter(sighting =>
-        sighting.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        sighting.location.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-    
-    // Apply species type filter
-    if (filterSpeciesType) {
-      filteredSightings = filteredSightings.filter(sighting =>
-        sighting.speciesType === filterSpeciesType
-      )
-    }
-    
-    // Apply location filter
-    if (filterLocation) {
-      filteredSightings = filteredSightings.filter(sighting =>
-        sighting.location === filterLocation
-      )
-    }
-    
-    // Notify parent component with filtered results
+    // Notify parent component with filter criteria instead of pre-filtered results
     if (this.props.onFiltersApplied) {
       this.props.onFiltersApplied({
-        filteredSightings,
-        searchQuery,
-        filterSpeciesType,
-        filterLocation
+        searchTerm: searchQuery,
+        speciesType: filterSpeciesType,
+        location: filterLocation
       })
     }
   }
