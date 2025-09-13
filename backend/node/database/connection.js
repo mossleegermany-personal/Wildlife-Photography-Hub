@@ -14,11 +14,7 @@ class DatabaseConnectivity {
             socketTimeoutMS: 30000,
             connectTimeoutMS: 20000,
             retryWrites: true,
-            retryReads: true,
-            ssl: true,
-            sslValidate: true,
-            tlsAllowInvalidCertificates: false,
-            tlsAllowInvalidHostnames: false
+            retryReads: true
         });
         
         this.isConnected = false;
@@ -82,8 +78,11 @@ class DatabaseConnectivity {
             }
             
             const db = this.client.db(databaseName);
+            console.log("Database result:", db);
             const collection = db.collection(collectionName);
+            console.log("Collection result:", collection);
             const result = await collection.insertOne(document);
+            console.log("InsertOne result:", result);
             
             return {
                 success: true,
