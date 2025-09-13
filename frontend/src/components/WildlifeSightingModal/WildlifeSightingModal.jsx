@@ -4,11 +4,9 @@ import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import '@css/WildlifeSightingModal/WildlifeSightingModal.css'
 
 // Environment configuration
-const config = {
-  API_BASE_URL: window.location.hostname === 'localhost'
-    ? 'http://localhost:3001'
-    : 'https://wildlife-photography-backend.azurewebsites.net'
-}
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://wildlife-photography-backend.azurewebsites.net'
 
 class WildlifeSightingModal extends Component {
   constructor(props) {
@@ -124,14 +122,14 @@ class WildlifeSightingModal extends Component {
       console.log('Submitting sighting data:', sightingData)
       
       // Skip API call if no backend URL is configured (production mode)
-      if (!config.API_BASE_URL) {
+      if (!API_BASE_URL) {
         alert('Backend API not available in demo mode')
         this.handleClose()
         return
       }
       
       // Send data to backend using axios
-      const response = await axios.post(`${config.API_BASE_URL}/wildlife-sightings`, {purpose: "newRecord", sightingData})
+      const response = await axios.post(`${API_BASE_URL}/wildlife-sightings`, {purpose: "newRecord", sightingData})
       
       if (response.data.success) {
         alert('Wildlife sighting recorded successfully!')

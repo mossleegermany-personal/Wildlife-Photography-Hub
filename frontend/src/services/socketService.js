@@ -1,11 +1,10 @@
 import { io } from 'socket.io-client';
 
 // Environment configuration
-const config = {
-  API_BASE_URL: window.location.hostname === 'localhost'
-    ? 'http://localhost:3001'
-    : 'https://wildlife-photography-backend.azurewebsites.net'
-}
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://wildlife-photography-backend.azurewebsites.net'
+  
 
 class SocketService {
   constructor() {
@@ -13,7 +12,7 @@ class SocketService {
     this.listeners = new Map();
   }
 
-  connect(url = config.SOCKET_URL) {
+  connect(url = API_BASE_URL) {
     if (!url) {
       console.log('Socket service disabled - no URL configured')
       return null

@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import './App.css'
 import MainPage from './components/MainPage'
 import WildlifeSightingModal from './components/WildlifeSightingModal/WildlifeSightingModal'
 import socketService from './services/socketService'
 
 // Environment configuration
-const config = {
-  API_BASE_URL: window.location.hostname === 'localhost'
-    ? 'http://localhost:3001'
-    : 'https://wildlife-photography-backend.azurewebsites.net/'
-}
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://wildlife-photography-backend.azurewebsites.net'
 
 class App extends Component {
   constructor(props) {
@@ -36,20 +35,16 @@ class App extends Component {
       console.log('🔄 Loading sightings from API...')
       
       // Skip API call if no backend URL is configured (production mode)
-      if (!config.API_BASE_URL) {
+      if (!API_BASE_URL) {
         console.log('⚠️ API disabled in production mode')
         return
       }
       
-      const response = await fetch(`${config.API_BASE_URL}/wildlife-sightings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ purpose: 'retrieveAll' })
+      const response = await axios.post(`${API_BASE_URL}/wildlife-sightings`, {
+        purpose: 'retrieveAll'
       })
 
-      const data = await response.json()
+      const data = response.data
       
       if (data.success && Array.isArray(data.data)) {
         console.log('✅ Successfully loaded', data.data.length, 'sightings from API')
