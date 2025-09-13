@@ -5,7 +5,7 @@ import '@css/WildlifeSightingModal/WildlifeSightingModal.css'
 
 // Environment configuration
 const config = {
-  API_BASE_URL: import.meta.env.DEV ? 'http://localhost:3001' : null
+  API_BASE_URL: import.meta.env.DEV ? 'http://localhost:3001' : 'https://wildlife-photography-backend.azurewebsites.net'
 }
 
 class WildlifeSightingModal extends Component {
