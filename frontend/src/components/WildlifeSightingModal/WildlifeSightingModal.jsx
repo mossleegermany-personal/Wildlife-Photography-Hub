@@ -115,6 +115,14 @@ class WildlifeSightingModal extends Component {
 
     try {
       console.log('Submitting sighting data:', sightingData)
+      
+      // Skip API call if no backend URL is configured (production mode)
+      if (!config.API_BASE_URL) {
+        alert('Backend API not available in demo mode')
+        this.handleClose()
+        return
+      }
+      
       // Send data to backend using axios
       const response = await axios.post(`${config.API_BASE_URL}/wildlife-sightings`, {purpose: "newRecord", sightingData})
       

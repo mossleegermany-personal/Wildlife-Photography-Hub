@@ -8,6 +8,11 @@ class SocketService {
   }
 
   connect(url = config.SOCKET_URL) {
+    if (!url) {
+      console.log('Socket service disabled - no URL configured')
+      return null
+    }
+    
     if (this.socket && this.socket.connected) {
       console.log('Socket already connected');
       return this.socket;
