@@ -158,51 +158,6 @@ class WildlifeSightingModal extends Component {
     })
   }
 
-  uploadImages = async (sightingId) => {
-    if (this.state.selectedImages.length === 0) {
-      return []
-    }
-
-    try {
-      // Convert images to base64
-      const imageData = await Promise.all(
-        this.state.selectedImages.map(async (file) => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onload = () => {
-              resolve({
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                data: reader.result // This includes the data:image/jpeg;base64, prefix
-              })
-            }
-            reader.onerror = reject
-            reader.readAsDataURL(file)
-          })
-        })
-      )
-
-      const response = await axios.post(`${API_BASE_URL}/wildlife-sightings/upload-images`, {
-        sightingId: sightingId,
-        images: imageData
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (response.data.success) {
-        return response.data.imageIds
-      } else {
-        throw new Error(response.data.message || 'Failed to upload images')
-      }
-    } catch (error) {
-      console.error('Error uploading images:', error)
-      throw error
-    }
-  }
-
   handleClose = () => {
     this.setState({
       speciesName: '',
@@ -248,32 +203,45 @@ class WildlifeSightingModal extends Component {
         return
       }
       
-      // Send data to backend using axios
-      const response = await axios.post(`${API_BASE_URL}/wildlife-sightings`, {purpose: "newRecord", sightingData})
+      // Convert images to base64 if any are selected
+      let imageData = []
+      if (this.state.selectedImages.length > 0) {
+        imageData = await Promise.all(
+          this.state.selectedImages.map(async (file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => {
+                resolve({
+                  name: file.name,
+                  type: file.type,
+                  size: file.size,
+                  data: reader.result // This includes the data:image/jpeg;base64, prefix
+                })
+              }
+              reader.onerror = reject
+              reader.readAsDataURL(file)
+            })
+          })
+        )
+      }
       
+      // Send data to backend using axios
+      const response = await axios.post(`${API_BASE_URL}/wildlife-sightings`, {
+        purpose: "newRecord", 
+        sightingData,
+        images: imageData
+      })
+
       if (response.data.success) {
-        const sightingId = response.data.data._id
-        
-        // Upload images if any were selected
-        let imageIds = []
-        if (this.state.selectedImages.length > 0) {
-          try {
-            imageIds = await this.uploadImages(sightingId)
-            console.log('Images uploaded successfully:', imageIds)
-          } catch (imageError) {
-            console.error('Failed to upload images:', imageError)
-            alert('Sighting recorded but failed to upload images: ' + imageError.message)
-          }
-        }
-        
+        const imageCount = imageData.length
         alert('Wildlife sighting recorded successfully!' + 
-              (imageIds.length > 0 ? ` ${imageIds.length} image(s) uploaded.` : ''))
+              (imageCount > 0 ? ` ${imageCount} image(s) uploaded.` : ''))
         
         // Also call the parent component's callback if it exists
         if (this.props.onRecordSighting) {
           this.props.onRecordSighting({
             ...response.data.data,
-            images: imageIds
+            images: response.data.imageIds || []
           })
         }
         

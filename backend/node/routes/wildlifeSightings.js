@@ -7,66 +7,81 @@ router.post('/', async function(req, res, next) {
     if (req.body.purpose === 'newRecord') 
     {
         try {
-            console.log("Uploading images to database");
+            console.log("Creating new wildlife sighting record");
             console.log("Request body keys:", Object.keys(req.body));
 
-            const { sightingId, images } = req.body;
+            const { sightingData, images } = req.body;
 
-            if (!sightingId) {
+            // Validate sighting data
+            if (!sightingData) {
                 return res.status(400).json({
                     success: false,
-                    message: "Sighting ID is required"
+                    message: "Sighting data is required"
                 });
             }
 
-            if (!images || !Array.isArray(images) || images.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Images array is required"
-                });
-            }
-
-            // Validate and process images
+            // Process images if any are provided
             const processedImages = [];
-            for (let i = 0; i < images.length; i++) {
-                const image = images[i];
-                
-                if (!image.data || !image.name || !image.type) {
-                    return res.status(400).json({
-                        success: false,
-                        message: `Invalid image data at index ${i}`
+            if (images && Array.isArray(images) && images.length > 0) {
+                for (let i = 0; i < images.length; i++) {
+                    const image = images[i];
+                    
+                    if (!image.data || !image.name || !image.type) {
+                        return res.status(400).json({
+                            success: false,
+                            message: `Invalid image data at index ${i}`
+                        });
+                    }
+
+                    // Check file size (10MB limit)
+                    const base64Data = image.data.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                    const sizeInBytes = (base64Data.length * 3) / 4; // Approximate size
+                    
+                    if (sizeInBytes > 10 * 1024 * 1024) {
+                        return res.status(400).json({
+                            success: false,
+                            message: `Image ${image.name} exceeds 10MB limit`
+                        });
+                    }
+
+                    processedImages.push({
+                        name: image.name,
+                        type: image.type,
+                        size: image.size,
+                        data: image.data,
+                        uploadedAt: new Date().toISOString()
                     });
                 }
-
-                // Check file size (10MB limit)
-                const base64Data = image.data.split(',')[1]; // Remove data:image/jpeg;base64, prefix
-                const sizeInBytes = (base64Data.length * 3) / 4; // Approximate size
-                
-                if (sizeInBytes > 10 * 1024 * 1024) {
-                    return res.status(400).json({
-                        success: false,
-                        message: `Image ${image.name} exceeds 10MB limit`
-                    });
-                }
-
-                processedImages.push({
-                    name: image.name,
-                    type: image.type,
-                    size: image.size,
-                    data: image.data,
-                    uploadedAt: new Date().toISOString()
-                });
             }
 
-            // Update the sighting with images
+            // Create sighting data with images
+            const completeSigntingData = {
+                ...sightingData,
+                images: processedImages,
+                createdAt: new Date().toISOString()
+            };
+
+            // Create the new sighting record
             const controller = new WildlifeSightingsController();
-            const result = await controller.updateSightingImages(sightingId, processedImages);
+            const result = await controller.createSighting(completeSigntingData);
 
             if (result.status === 'success') {
+                // Emit the new sighting to all connected clients via Socket.IO
+                const io = req.app.get('io');
+                if (io) {
+                    io.emit('newSighting', {
+                        type: 'NEW_SIGHTING',
+                        data: result.data,
+                        imageCount: processedImages.length
+                    });
+                    console.log('New sighting broadcasted via Socket.IO');
+                }
+
                 return res.json({
                     success: true,
-                    message: `${processedImages.length} image(s) uploaded successfully`,
-                    imageIds: processedImages.map((_, index) => `${sightingId}_image_${index}`)
+                    message: `Wildlife sighting recorded successfully${processedImages.length > 0 ? ` with ${processedImages.length} image(s)` : ''}`,
+                    data: result.data,
+                    imageIds: processedImages.map((_, index) => `${result.data._id}_image_${index}`)
                 });
             } else {
                 return res.status(500).json({
@@ -75,10 +90,10 @@ router.post('/', async function(req, res, next) {
                 });
             }
         } catch (error) {
-            console.error("Upload images error:", error);
+            console.error("Create sighting error:", error);
             return res.status(500).json({
                 success: false,
-                message: "Error uploading images",
+                message: "Error creating wildlife sighting",
                 error: error.message
             });
         }
