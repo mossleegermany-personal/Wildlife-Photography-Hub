@@ -98,6 +98,67 @@ class WildlifeSightingsController
       }
     });
   }
+
+  updateSightingImages(sightingId, imageUrls) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Validate input
+        if (!sightingId) {
+          reject({
+            status: 'error',
+            message: 'Sighting ID is required'
+          });
+          return;
+        }
+
+        if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+          reject({
+            status: 'error',
+            message: 'Image URLs array is required'
+          });
+          return;
+        }
+
+        console.log("Updating sighting with images:", sightingId, imageUrls);
+
+        // Update the sighting document with image URLs
+        const updateData = {
+          images: imageUrls,
+          updatedAt: new Date().toISOString()
+        };
+
+        const result = await this.db.updateDocument(
+          this.databaseName, 
+          this.collectionName, 
+          { _id: sightingId }, 
+          { $set: updateData }
+        );
+
+        console.log("Update document result:", result);
+        
+        if (result.success) {
+          resolve({
+            status: 'success',
+            message: 'Sighting images updated successfully',
+            data: result.data
+          });
+        } else {
+          reject({
+            status: 'error',
+            message: 'Failed to update sighting images in database',
+            error: result.error
+          });
+        }
+      } catch (error) {
+        console.error("Error updating sighting images:", error);
+        reject({
+          status: 'error',
+          message: 'An unexpected error occurred while updating sighting images',
+          error: error.message
+        });
+      }
+    });
+  }
 }
 
 module.exports = WildlifeSightingsController;

@@ -166,6 +166,50 @@ class DatabaseConnectivity {
             };
         }
     }
+
+    async updateDocument(databaseName, collectionName, filter, update) {
+        try {
+            await this.initialize();
+            
+            if (!databaseName || !collectionName) {
+                return {
+                    success: false,
+                    error: 'Database name and collection name are required'
+                };
+            }
+            
+            const db = this.client.db(databaseName);
+            const collection = db.collection(collectionName);
+            
+            // Convert string ID to ObjectId if needed
+            if (filter._id && typeof filter._id === 'string') {
+                filter._id = new ObjectId(filter._id);
+            }
+            
+            const result = await collection.updateOne(filter, update);
+            
+            if (result.matchedCount === 0) {
+                return {
+                    success: false,
+                    error: 'No document found with the specified filter'
+                };
+            }
+            
+            return {
+                success: true,
+                message: 'Document updated successfully',
+                data: {
+                    matchedCount: result.matchedCount,
+                    modifiedCount: result.modifiedCount
+                }
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
 }
 
 module.exports = DatabaseConnectivity;

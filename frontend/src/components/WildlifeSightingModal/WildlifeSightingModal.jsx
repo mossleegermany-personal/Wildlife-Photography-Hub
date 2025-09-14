@@ -28,6 +28,9 @@ class WildlifeSightingModal extends Component {
       selectedLat: 1.3521,
       selectedLng: 103.8198,
       mapLoadError: false,
+      selectedImages: [],
+      uploading: false,
+      isDragOver: false,
       speciesOptions: [
         'Mammal',
         'Bird',
@@ -88,6 +91,118 @@ class WildlifeSightingModal extends Component {
     this.setState({ [field]: value })
   }
 
+  handleImageSelect = (event) => {
+    const files = Array.from(event.target.files)
+    this.processFiles(files)
+  }
+
+  handleDragOver = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    this.setState({ isDragOver: true })
+  }
+
+  handleDragLeave = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    this.setState({ isDragOver: false })
+  }
+
+  handleDrop = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    this.setState({ isDragOver: false })
+    
+    const files = Array.from(event.dataTransfer.files)
+    this.processFiles(files)
+  }
+
+  processFiles = (files) => {
+    const maxFiles = 5
+    const maxSizePerFile = 10 * 1024 * 1024 // 10MB per file
+    
+    if (files.length > maxFiles) {
+      alert(`You can only upload up to ${maxFiles} images`)
+      return
+    }
+
+    // Validate file types and sizes
+    const validFiles = []
+    
+    for (let file of files) {
+      if (!file.type.startsWith('image/')) {
+        alert(`${file.name} is not an image file`)
+        continue
+      }
+      
+      if (file.size > maxSizePerFile) {
+        alert(`${file.name} is too large. Maximum size is 10MB`)
+        continue
+      }
+      
+      validFiles.push(file)
+    }
+
+    this.setState({ 
+      selectedImages: validFiles
+    })
+  }
+
+  removeImage = (index) => {
+    const newImages = [...this.state.selectedImages]
+    
+    newImages.splice(index, 1)
+    
+    this.setState({
+      selectedImages: newImages
+    })
+  }
+
+  uploadImages = async (sightingId) => {
+    if (this.state.selectedImages.length === 0) {
+      return []
+    }
+
+    try {
+      // Convert images to base64
+      const imageData = await Promise.all(
+        this.state.selectedImages.map(async (file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = () => {
+              resolve({
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                data: reader.result // This includes the data:image/jpeg;base64, prefix
+              })
+            }
+            reader.onerror = reject
+            reader.readAsDataURL(file)
+          })
+        })
+      )
+
+      const response = await axios.post(`${API_BASE_URL}/wildlife-sightings/upload-images`, {
+        sightingId: sightingId,
+        images: imageData
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.data.success) {
+        return response.data.imageIds
+      } else {
+        throw new Error(response.data.message || 'Failed to upload images')
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      throw error
+    }
+  }
+
   handleClose = () => {
     this.setState({
       speciesName: '',
@@ -95,7 +210,10 @@ class WildlifeSightingModal extends Component {
       coordinates: '',
       showMapsSection: false,
       showLocationModal: false,
-      showSpeciesDropdown: false
+      showSpeciesDropdown: false,
+      selectedImages: [],
+      uploading: false,
+      isDragOver: false
     })
     if (this.props.onClose) {
       this.props.onClose()
@@ -109,6 +227,8 @@ class WildlifeSightingModal extends Component {
       alert('Please fill in all fields')
       return
     }
+
+    this.setState({ uploading: true })
 
     const sightingData = {
       speciesName,
@@ -132,11 +252,29 @@ class WildlifeSightingModal extends Component {
       const response = await axios.post(`${API_BASE_URL}/wildlife-sightings`, {purpose: "newRecord", sightingData})
       
       if (response.data.success) {
-        alert('Wildlife sighting recorded successfully!')
+        const sightingId = response.data.data._id
+        
+        // Upload images if any were selected
+        let imageIds = []
+        if (this.state.selectedImages.length > 0) {
+          try {
+            imageIds = await this.uploadImages(sightingId)
+            console.log('Images uploaded successfully:', imageIds)
+          } catch (imageError) {
+            console.error('Failed to upload images:', imageError)
+            alert('Sighting recorded but failed to upload images: ' + imageError.message)
+          }
+        }
+        
+        alert('Wildlife sighting recorded successfully!' + 
+              (imageIds.length > 0 ? ` ${imageIds.length} image(s) uploaded.` : ''))
         
         // Also call the parent component's callback if it exists
         if (this.props.onRecordSighting) {
-          this.props.onRecordSighting(response.data.data)
+          this.props.onRecordSighting({
+            ...response.data.data,
+            images: imageIds
+          })
         }
         
         this.handleClose()
@@ -155,6 +293,8 @@ class WildlifeSightingModal extends Component {
         // Something else happened
         alert('Error: ' + error.message)
       }
+    } finally {
+      this.setState({ uploading: false })
     }
   }
 
@@ -417,6 +557,44 @@ class WildlifeSightingModal extends Component {
               />
             </div>
 
+            <div className="input-group">
+              <label>📷 Photos (Optional)</label>
+              <div 
+                className={`image-upload-container ${this.state.isDragOver ? 'drag-over' : ''}`}
+                onDragOver={this.handleDragOver}
+                onDragLeave={this.handleDragLeave}
+                onDrop={this.handleDrop}
+              >
+                <input
+                  type="file"
+                  id="image-upload"
+                  multiple
+                  accept="image/*"
+                  onChange={this.handleImageSelect}
+                  className="hidden-file-input"
+                  style={{ display: 'none' }}
+                />
+                <div className="drag-drop-area">
+                  <div className="drag-drop-icon">📁</div>
+                  <div className="drag-drop-text">
+                    <p><strong>Drag & drop images here</strong></p>
+                    <p>or</p>
+                    <label htmlFor="image-upload" className="image-upload-btn">
+                      Choose Photos
+                    </label>
+                  </div>
+                  <div className="upload-limits">
+                    Max 5 photos, 10MB each
+                  </div>
+                </div>
+                <div className="image-info">
+                  {this.state.selectedImages.length > 0 && (
+                    <span>{this.state.selectedImages.length} photo(s) selected</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="datetime-row">
               <div className="input-group-half">
                 <label>📅 Date</label>
@@ -441,8 +619,9 @@ class WildlifeSightingModal extends Component {
             <button 
               onClick={this.handleSubmit}
               className="submit-btn"
+              disabled={this.state.uploading}
             >
-              🔍 Record Sighting
+              {this.state.uploading ? '📤 Uploading...' : '🔍 Record Sighting'}
             </button>
           </div>
         </div>

@@ -39,7 +39,8 @@ class MainPage extends Component {
       console.log(`Transforming sighting ${index}:`, {
         coordinates: sighting.coordinates,
         speciesName: sighting.speciesName,
-        speciesType: sighting.speciesType
+        speciesType: sighting.speciesType,
+        images: sighting.images
       })
       
       return {
@@ -49,6 +50,7 @@ class MainPage extends Component {
         date: sighting.date || 'Unknown Date',
         time: sighting.time || 'Unknown Time',
         coordinates: sighting.coordinates || 'Unknown Location',
+        images: sighting.images || []
       }
     })
     
